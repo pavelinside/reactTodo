@@ -1,17 +1,19 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// remove all files from dist
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+// copy fonts and css to dist
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 // для сжатия css, полученного из js
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 // для сжатия css, полученного из js
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+// analyze bundle
+//const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 module.exports = (env = {}) => {
-  //console.log(env);
-  //const isDev = process.env.NODE_ENV === 'development'; //const isProd = !isDev;
   const isProd = env.mode === 'production';
   const isDev = env.mode === 'development';
   const filename = ext => isDev ? `[name].${ext}` : `[name]-[contenthash].${ext}`; // [hash] [contenthash:8]
@@ -26,7 +28,6 @@ module.exports = (env = {}) => {
   const getPlugins = () => {
     const plugins = [
       new HtmlWebpackPlugin({
-        title: 'Notebook',
         buildTime: new Date().toISOString(),
         template: 'public/index.html'
       }),
@@ -53,6 +54,7 @@ module.exports = (env = {}) => {
           filename: filename('css')
         })
       );
+      //plugins.push(new BundleAnalyzerPlugin())
     }
     if(isDev){
       plugins.push(
@@ -131,11 +133,6 @@ module.exports = (env = {}) => {
         {
           test: /\.css$/,
           use: getStyleLoaders()
-        },
-        // SASS/SCSS
-        {
-          test: /\.(s[ca]ss)$/,
-          use: [...getStyleLoaders(), 'sass-loader' ]
         },
       ]
     },

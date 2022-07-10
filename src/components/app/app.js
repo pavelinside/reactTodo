@@ -79,14 +79,11 @@ const App = (props) => {
 };
 //App.defaultProps = {};
 
-
 import { connect } from "react-redux";
-//import actions from "../../actions";
-import {actions} from "../../reducers/todoSlice";
-//export const { setItems, addItem, deleteItem, toggleDoneItem, toggleImportantItem, setFilter, setSearch } = todoSlice.actions
+import {actions} from "../../reducers";
 
 function mapStateToProps(state) {
-  console.log('mStP', state);
+  //console.log('mStP', state);
   return {
     items: state.items,
     filter: state.filter,
@@ -94,8 +91,4 @@ function mapStateToProps(state) {
   };
 }
 
-
-
 export default connect(mapStateToProps, actions)(App);
-
-//export default App;

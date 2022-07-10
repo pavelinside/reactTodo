@@ -1,5 +1,3 @@
-let maxId = 100;
-
 const deleteItem = function(items, id){
   const idx = items.findIndex((item) => item.id === id);
   if(idx === -1){
@@ -11,6 +9,7 @@ const deleteItem = function(items, id){
   ];
 };
 
+let maxId = 100;
 const createItem = function(label){
   return {
     id: ++maxId,
@@ -19,6 +18,7 @@ const createItem = function(label){
     done: false
   };
 };
+//createItem.maxId = 100;
 
 const toggleProperty = function(arr, id, propName) {
   const idx = arr.findIndex((item) => item.id === id);
@@ -37,37 +37,5 @@ const toggleImportant = function(items, id){
   return toggleProperty(items, id, "important");
 };
 
-const updateItems = (state, action) => {
-  if (state === undefined) {
-    return [];
-  }
-  console.log('SS', state, action);
 
-  let newItems = [];
-
-  switch (action.type) {
-  case "SET_ITEMS":
-    newItems = (state && state.items || []).concat(action.state.items);
-    return newItems;
-
-  case "ADD_ITEM":
-    return [...state.items, createItem(action.payload)];
-
-  case "DELETE_ITEM":
-    //debugger;
-    newItems = deleteItem(state.items, action.payload);
-    return newItems;
-
-  case "TOGGLE_DONE_ITEM":
-    newItems = toggleDone(state.items, action.payload);
-    return newItems;
-
-  case "TOGGLE_IMPORTANT_ITEM":
-    newItems = toggleImportant(state.items, action.payload);
-    return newItems;
-
-  default:
-    return state.items;
-  }
-};
-export default updateItems;
+export {deleteItem, createItem, toggleProperty, toggleDone, toggleImportant};

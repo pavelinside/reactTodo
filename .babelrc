@@ -1,0 +1,15 @@
+{
+  "plugins": [
+
+  ],
+  "presets": [[
+    "@babel/env",
+    {
+      "corejs": 3,
+      "useBuiltIns": "usage",
+      "modules": false
+    }
+  ],
+    "@babel/react"
+  ]
+}

@@ -10,7 +10,7 @@ import ErrorIndicator from "../error-indicator";
 import Spinner from "../spinner";
 
 import { connect } from "react-redux";
-import {getList, addItem, deleteItem, toggleImportant, toggleDone, setSearch, setFilter} from "../../reducers";
+import {getList, addItem, deleteItem, toggleImportant, toggleDone, setSearch, setFilter} from "../../actions";
 
 const App = (props) => { console.log("items", props);
   React.useEffect(() => {

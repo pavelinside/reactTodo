@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import DummyTodoService from "../services/dummy-todo-service";
 
-const initialState = {
+export const initialState = {
   items: [
     { id: 1, label: "Drink Tea", important: false, done: false }
   ],
@@ -54,56 +53,6 @@ const todoSlice = createSlice({
   }
 });
 
-const service = new DummyTodoService();
-service.changeFilter(initialState.filter);
-service.changeSearch(initialState.search);
-
-const callAction = (action, params, dispatch) => {
-  dispatch(todoSlice.actions.setLoading(true));
-
-  service[action](params)
-    .then(data => {
-      dispatch(todoSlice.actions.setLoading(false));
-      dispatch(todoSlice.actions.setError(""));
-      if(data.items !== undefined) {
-        dispatch(todoSlice.actions.setItems(data.items));
-      }
-      if(data.doneCount !== undefined) {
-        dispatch(todoSlice.actions.setDoneCount(data.doneCount));
-      }
-      if(data.importantCount !== undefined) {
-        dispatch(todoSlice.actions.setImportantCount(data.importantCount));
-      }
-      if(data.allCount !== undefined) {
-        dispatch(todoSlice.actions.setAllCount(data.allCount));
-      }
-    })
-    .catch(err => {
-      console.log('Error', err);
-      dispatch(todoSlice.actions.setLoading(false));
-      dispatch(todoSlice.actions.setError(err.error));
-    });
-};
-
-export const getList = () => dispatch => callAction('getList', {}, dispatch);
-
-export const addItem = item => dispatch => callAction('addItem', {item: item}, dispatch);
-
-export const deleteItem = id => dispatch => callAction('deleteItem', id, dispatch);
-
-export const toggleImportant = id => dispatch => callAction('toggleImportant', id, dispatch);
-
-export const toggleDone = id => dispatch => callAction('toggleDone', id, dispatch);
-
-export const setSearch = search => dispatch => {
-  dispatch(todoSlice.actions.setSearch(search));
-  callAction('setSearch', search, dispatch)
-};
-
-export const setFilter = filter => dispatch => {
-  dispatch(todoSlice.actions.setFilter(filter));
-  callAction('setFilter', filter, dispatch);
-};
-
-//const { actions, reducer} = todoSlice;
+const {actions} = todoSlice;
+export {actions};
 export default todoSlice.reducer;

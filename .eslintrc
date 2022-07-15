@@ -16,7 +16,8 @@
     "no-console": 0,
     "indent": ["warn", 2],
     "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    "react/jsx-uses-vars": "error",
+    "no-debugger":"off"
   },
   "plugins": [
     "react"

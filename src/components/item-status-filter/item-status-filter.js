@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const filterButtons = [
   { name: "all", label: "All" },
@@ -14,6 +15,14 @@ const ItemStatusFilter = ({ filter, onFilterChange = () => {} }) => {
   const options = filterButtons.map(({ name, label }) => {
     return <option key={name} value={name}>{label}</option>;
   });
-  return <select value={filter} className="form-select" onChange={onChange}>{options}</select>;
+  return <select value={filter} className="form-select" onChange={onChange}>
+    {options}
+  </select>;
 };
+ItemStatusFilter.propTypes = {
+  filter: PropTypes.string.isRequired,
+  onFilterChange: PropTypes.func
+};
+
+
 export default ItemStatusFilter;

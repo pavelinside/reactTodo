@@ -1,7 +1,14 @@
 import React from "react";
+import "./spinner.css";
 
 const Spinner = () => {
-  return <div>loading...</div>;
+  return (
+    <div className="d-flex justify-content-center spinner-todo">
+      <div className="spinner-border" role="status">
+        <span className="sr-only">Loading...</span>
+      </div>
+    </div>
+  );
 };
 
 export default Spinner;

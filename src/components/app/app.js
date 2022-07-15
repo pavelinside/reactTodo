@@ -1,61 +1,40 @@
 import React from "react";
-import AppHeader from "../app-header";
-import TodoList from "../todo-list";
-//import SearchPanel from "../search-panel";
-import ItemStatusFilter from "../item-status-filter";
-import ItemAddForm from "../item-add-form";
-//import DummyTodoService from "../../services/dummy-todo-service";
-import ErrorIndicator from "../error-indicator";
+import PropTypes from "prop-types";
 import "./app.css";
 
-const App = (props) => {
-  let items = props.items;
-  console.log("items", props, items);
+import AppHeader from "../app-header";
+import TodoList from "../todo-list";
+import ItemStatusFilter from "../item-status-filter";
+import ItemAddForm from "../item-add-form";
+import ErrorIndicator from "../error-indicator";
+import Spinner from "../spinner";
 
-  //const [error, setError] = React.useState('');
+import { connect } from "react-redux";
+import {getList, addItem, deleteItem, toggleImportant, toggleDone, setSearch, setFilter} from "../../reducers";
 
+const App = (props) => { console.log("items", props);
   React.useEffect(() => {
-    // const Service = new DummyTodoService();
-    // Service.getList().then((data) => {
-    //   setError('');
-    //   setItems(data);
-    // }).catch((err) => {
-    //   setError(err.message);
-    // });
-  },[]); // эффект срабатывает только один раз - при самом первом рендеринге
-
-  const doneCount = items.filter((item) => item.done).length;
-  const toDoCount = items.length - doneCount;
-  const filterItems = function(items, filter){
-    if (filter === "all") {
-      return items;
-    } else if (filter === "active") {
-      return items.filter((item) => !item.done);
-    } else if (filter === "done") {
-      return items.filter((item) => item.done);
-    } else if (filter === "important") {
-      return items.filter((item) => item.important);
-    }
-  };
-  const searchItems = function(items, search){
-    if (search.length === 0) {
-      return items;
-    }
-    return items.filter((item) => {
-      return item.label.toLowerCase().indexOf(search.toLowerCase()) > -1;
-    });
-  };
-  const visibleItems = searchItems(
-    filterItems(items, props.filter),
-    props.search
-  );
+    console.log('useEffectInit');
+    props.getList();
+  }, []);
+  React.useEffect(() => {
+    console.log('useEffect');
+  });
 
   if(props.error){
-    return <ErrorIndicator error={props.error} />;
+    return (
+      <div className="todo-app">
+        <ErrorIndicator error={props.error} />
+        <i className="fa fa-refresh" aria-hidden="true" onClick={props.getList}> Refresh</i>
+      </div>
+    );
   }
 
+  const spinner = props.loading ? <Spinner /> : "";
+  console.log("render");
   return (
     <div className="todo-app">
+      {spinner}
       <div className="search-panel d-flex">
         <ItemAddForm onItemAdded={props.addItem} onSearchChange={props.setSearch} />
 
@@ -66,29 +45,71 @@ const App = (props) => {
       </div>
 
       <TodoList
-        items={visibleItems}
-        onToggleImportant={props.toggleImportantItem}
-        onToggleDone={props.toggleDoneItem}
+        items={props.items}
+        onToggleImportant={props.toggleImportant}
+        onToggleDone={props.toggleDone}
         onDelete={props.deleteItem}
       />
 
-      <AppHeader toDo={toDoCount} done={doneCount} />
-
+      <AppHeader all={props.allCount} done={props.doneCount} important={props.importantCount} />
     </div>
   );
 };
-//App.defaultProps = {};
+App.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.object.isRequired
+  ).isRequired,
+  filter: PropTypes.string.isRequired,
+  search: PropTypes.string.isRequired,
+  doneCount: PropTypes.number.isRequired,
+  importantCount: PropTypes.number.isRequired,
+  allCount: PropTypes.number.isRequired,
+  error: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
 
-import { connect } from "react-redux";
-import {actions} from "../../reducers";
+  getList: PropTypes.func.isRequired,
+  addItem: PropTypes.func.isRequired,
+  deleteItem: PropTypes.func.isRequired,
+  toggleImportant: PropTypes.func.isRequired,
+  toggleDone: PropTypes.func.isRequired,
+  setSearch: PropTypes.func.isRequired,
+  setFilter: PropTypes.func.isRequired,
+};
+App.defaultProps = {
+  filter: "all",
+  search: ""
+};
 
 function mapStateToProps(state) {
-  //console.log('mStP', state);
+  //console.log('qq', state);
   return {
     items: state.items,
     filter: state.filter,
-    search: state.search
+    search: state.search,
+    doneCount: state.doneCount,
+    importantCount: state.importantCount,
+    allCount: state.allCount,
+    error: state.error,
+    loading: state.loading,
   };
+
 }
 
-export default connect(mapStateToProps, actions)(App);
+// import { bindActionCreators } from 'redux'
+// function mapDispatchToProps(dispatch) {
+//   return bindActionCreators({ increment, decrement, reset }, dispatch)
+// }
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getList: () => dispatch(getList()),
+    addItem: (item) => dispatch(addItem(item)),
+    deleteItem: (id) => dispatch(deleteItem(id)),
+    toggleImportant: (id) => dispatch(toggleImportant(id)),
+    toggleDone: (id) => dispatch(toggleDone(id)),
+    setSearch: (search) => dispatch(setSearch(search)),
+    setFilter: (filter) => dispatch(setFilter(filter))
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

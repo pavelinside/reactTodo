@@ -1,7 +1,8 @@
 import React from "react";
 import "./item-add-form.css";
+import PropTypes from "prop-types";
 
-function itemAddFormHook(props){
+const ItemAddForm = (props) => {
   const [label, selLabel] = React.useState('');
 
   const onLabelChange = function(e){
@@ -38,6 +39,10 @@ function itemAddFormHook(props){
       </button>
     </form>
   );
-}
+};
+ItemAddForm.propTypes = {
+  onItemAdded: PropTypes.func,
+  onSearchChange: PropTypes.func
+};
 
-export default itemAddFormHook;
+export default ItemAddForm;

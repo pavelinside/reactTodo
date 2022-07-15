@@ -1,14 +1,20 @@
 import React from "react";
 import "./app-header.css";
+import PropTypes from "prop-types";
 
-const AppHeader = ({ toDo, done }) => {
+const AppHeader = ({ all, done, important }) => {
   return (
     <div className="app-header d-flex">
       <h2>
-        Todo: {toDo}, Done: {done}
+        All: {all} Done: {done} Important: {important}
       </h2>
     </div>
   );
+};
+AppHeader.propTypes = {
+  all: PropTypes.number.isRequired,
+  done: PropTypes.number.isRequired,
+  important: PropTypes.number.isRequired
 };
 
 export default AppHeader;

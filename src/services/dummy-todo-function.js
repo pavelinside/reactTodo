@@ -1,11 +1,12 @@
 let maxId = 100;
-const createItem = function(label){
-  return {
+const createItem = function(items, label){
+  const newItem = {
     id: ++maxId,
     label,
     important: false,
     done: false
   };
+  return [...items, newItem];
 };
 
 const deleteItem = function(items, id){
@@ -60,4 +61,4 @@ const searchItems = function(items, search){
 };
 
 export {filterItems, searchItems};
-export {deleteItem, createItem, toggleProperty, toggleDone, toggleImportant};
+export {deleteItem, createItem, toggleDone, toggleImportant};

@@ -36,7 +36,7 @@ const App = (props) => { console.log("items", props);
     <div className="todo-app">
       {spinner}
       <div className="search-panel d-flex">
-        <ItemAddForm onItemAdded={props.addItem} onSearchChange={props.setSearch} />
+        <ItemAddForm value={props.search} onItemAdded={props.addItem} onSearchChange={props.setSearch} />
 
         <ItemStatusFilter
           filter={props.filter}

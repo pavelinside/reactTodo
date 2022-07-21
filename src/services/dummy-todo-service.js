@@ -1,4 +1,5 @@
 import {filterItems, searchItems, deleteItem, createItem, toggleDone, toggleImportant} from "./dummy-todo-function";
+import initialState from "../reducers/initial-state";
 
 export default class DummyTodoService {
   state = {
@@ -7,24 +8,15 @@ export default class DummyTodoService {
       { id: 2, label: "Learn React", important: true, done: false },
       { id: 3, label: "Make Awesome App", important: false, done: false }
     ],
-    filter: "all",
-    search: "",
-    error: "",
-    message: ""
-  }
-
-  changeSearch(value){
-    this.state.search = value;
-  }
-
-  changeFilter(value){
-    this.state.filter = value;
-  }
+    filter: initialState.filter,
+    search: initialState.search,
+    doneCount: initialState.doneCount,
+    importantCount: initialState.importantCount,
+    allCount: initialState.allCount,
+    error: ""
+  };
 
   formResult() {
-    const doneCount = this.state.items.filter((item) => item.done).length;
-    const importantCount = this.state.items.filter((item) => item.important).length;
-    const allCount = this.state.items.length;
     const items = searchItems(
       filterItems(this.state.items, this.state.filter),
       this.state.search
@@ -32,47 +24,51 @@ export default class DummyTodoService {
 
     return {
       items,
-      doneCount,
-      importantCount,
-      allCount
+      doneCount: this.state.doneCount,
+      importantCount: this.state.importantCount,
+      allCount: this.state.allCount
     };
   }
 
-  getList({action = "load"} = {}) {
-    this.state.message = "";
+  _transformItems = () => {
+    this.state.doneCount = this.state.items.filter((item) => item.done).length;
+    this.state.importantCount = this.state.items.filter((item) => item.important).length;
+    this.state.allCount = this.state.items.length;
+  };
+
+  async getList({action = "load"} = {}) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() > 0.75) {
           //resolve(this.formResult());
           reject( {error: `Error ${action}`});
         } else {
+          this._transformItems();
           resolve(this.formResult());
         }
       }, 1000);
     });
   }
 
-  setSearch(value) {
-    this.changeSearch(value);
+  async setSearch(value) {
+    this.state.search = value;
     return this.getList({action: 'search'});
   }
 
-  setFilter(value){
-    this.changeFilter(value);
+  async setFilter(value){
+    this.state.filter = value;
     return this.getList({action: 'filter'});
   }
 
-  addItem({item = ""}) {
+  async addItem({item = ""}) {
     if(!item){
       return Promise.reject("Incorrect title");
     }
-    const newItem = createItem(item);
-    //this.state.items.push(newItem); // TypeError: Cannot add property 3, object is not extensible
-    this.state.items = [...this.state.items, newItem];
+    this.state.items = createItem(this.state.items, item);
     return this.getList({action: 'add'});
   }
 
-  deleteItem(id = 0) {
+  async deleteItem(id = 0) {
     if(id <= 0){
       return Promise.reject("Incorrect id");
     }
@@ -80,7 +76,7 @@ export default class DummyTodoService {
     return this.getList({action: 'delete'});
   }
 
-  toggleDone(id = 0) {
+  async toggleDone(id = 0) {
     if(id <= 0){
       return Promise.reject("Incorrect id");
     }
@@ -88,7 +84,7 @@ export default class DummyTodoService {
     return this.getList({action: 'change done state'});
   }
 
-  toggleImportant(id = 0) {
+  async toggleImportant(id = 0) {
     if(id <= 0){
       return Promise.reject("Incorrect id");
     }

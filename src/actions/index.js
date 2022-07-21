@@ -1,34 +1,35 @@
-import DummyTodoService from "../services/dummy-todo-service";
-import {actions, initialState} from "../reducers";
+//import Service from "../services/dummy-todo-service";
+import Service from "../services/node-todo-service";
+import {actions} from "../reducers";
 
-const service = new DummyTodoService();
-service.changeFilter(initialState.filter);
-service.changeSearch(initialState.search);
+const service = new Service();
 
-const callAction = (action, params, dispatch) => {
+const callAction = async (action, params, dispatch) => {
   dispatch(actions.setLoading(true));
 
-  service[action](params)
-    .then(data => {
-      dispatch(actions.setLoading(false));
-      dispatch(actions.setError(""));
-      if(data.items !== undefined) {
-        dispatch(actions.setItems(data.items));
-      }
-      if(data.doneCount !== undefined) {
-        dispatch(actions.setDoneCount(data.doneCount));
-      }
-      if(data.importantCount !== undefined) {
-        dispatch(actions.setImportantCount(data.importantCount));
-      }
-      if(data.allCount !== undefined) {
-        dispatch(actions.setAllCount(data.allCount));
-      }
-    })
-    .catch(err => {
-      dispatch(actions.setLoading(false));
-      dispatch(actions.setError(err.error));
-    });
+  const data = await service[action](params).catch((err) => {
+    //console.log('error', err);
+    dispatch(actions.setLoading(false));
+    dispatch(actions.setError(err.error));
+  });
+  if(!data){
+    return;
+  }
+
+  dispatch(actions.setLoading(false));
+  dispatch(actions.setError(""));
+  if(data.items !== undefined) {
+    dispatch(actions.setItems(data.items));
+  }
+  if(data.doneCount !== undefined) {
+    dispatch(actions.setDoneCount(data.doneCount));
+  }
+  if(data.importantCount !== undefined) {
+    dispatch(actions.setImportantCount(data.importantCount));
+  }
+  if(data.allCount !== undefined) {
+    dispatch(actions.setAllCount(data.allCount));
+  }
 };
 
 export const getList = () => dispatch => callAction('getList', {}, dispatch);

@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {filterList} from "../../define";
 
 const filterButtons = [
-  { name: "all", label: "All" },
-  { name: "active", label: "Active" },
-  { name: "done", label: "Done" },
-  { name: "important", label: "Important" }
+  { name: filterList.all, label: "All" },
+  { name: filterList.active, label: "Active" },
+  { name: filterList.done, label: "Done" },
+  { name: filterList.important, label: "Important" }
 ];
 
 const ItemStatusFilter = ({ filter, onFilterChange = () => {} }) => {

@@ -10,7 +10,8 @@
     "stats": "webpack --mode production --json > stats.json && webpack-bundle-analyzer stats.json",
     "dev": "webpack --mode development --env mode=development",
     "prod": "webpack --mode production --env mode=production",
-    "start": "webpack-dev-server --mode development"
+    "start": "webpack-dev-server --mode development",
+    "server": "nodemon node/index.js"
   },
   "keywords": [],
   "author": "Pavel Borisov",
@@ -33,6 +34,7 @@
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.0",
     "node-sass": "^7.0.1",
+    "nodemon": "^2.0.19",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.3",
     "webpack": "^5.72.0",

@@ -5,6 +5,13 @@ import PropTypes from "prop-types";
 const ItemAddForm = (props) => {
   const [label, selLabel] = React.useState('');
 
+  React.useEffect(() => {
+    // TODO need before render
+    if(props.value){
+      selLabel(props.value);
+    }
+  }, []);
+
   const onLabelChange = function(e){
     selLabel(e.target.value);
   };
@@ -42,7 +49,8 @@ const ItemAddForm = (props) => {
 };
 ItemAddForm.propTypes = {
   onItemAdded: PropTypes.func,
-  onSearchChange: PropTypes.func
+  onSearchChange: PropTypes.func,
+  value: PropTypes.string
 };
 
 export default ItemAddForm;

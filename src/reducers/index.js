@@ -1,17 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-export const initialState = {
-  items: [
-    { id: 1, label: "Drink Tea", important: false, done: false }
-  ],
-  filter: "all",
-  search: "",
-  loading: false,
-  error: "",
-  doneCount: 0,
-  importantCount: 0,
-  allCount: 0
-};
+import initialState from './initial-state';
 
 // https://stackoverflow.com/questions/61834206/how-to-use-dispatch-in-createslice-reducer
 const todoSlice = createSlice({
@@ -19,7 +7,7 @@ const todoSlice = createSlice({
   initialState: initialState,
   reducers: {
     setError: (state, action) => {
-      console.log('setError', action.payload);
+      //console.log('setError', action.payload);
       state.error = action.payload;
     },
     setLoading: (state, action) => {

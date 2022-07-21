@@ -1,6 +1,6 @@
 const Todo = require('../models/Todo');
 const {filterList} = require("../define");
-const mongoose = require("mongoose");
+const {Types} = require("mongoose");
 
 class todoService {
   async getList({filter = filterList.all, search = ''}) {
@@ -51,13 +51,13 @@ class todoService {
   }
 
   async deleteItem(id) {
-    if(mongoose.Types.ObjectId.isValid(id)) {
+    if(Types.ObjectId.isValid(id)) {
       await Todo.remove({ _id: id });
     }
   }
 
   async toggleImportant(id) {
-    if(mongoose.Types.ObjectId.isValid(id)) {
+    if(Types.ObjectId.isValid(id)) {
       const row = await Todo.findOne({_id:id});
       if(row){
         await Todo.update({ _id: id },{ important: !row.important });
@@ -66,7 +66,7 @@ class todoService {
   }
 
   async toggleDone(id) {
-    if(mongoose.Types.ObjectId.isValid(id)) {
+    if(Types.ObjectId.isValid(id)) {
       const row = await Todo.findOne({_id:id});
       if(row){
         await Todo.update({ _id: id },{ done: !row.done });

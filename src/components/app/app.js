@@ -8,11 +8,13 @@ import ItemStatusFilter from "../item-status-filter";
 import ItemAddForm from "../item-add-form";
 import ErrorIndicator from "../error-indicator";
 import Spinner from "../spinner";
+import Pagination from "../pagination";
 
 import { connect } from "react-redux";
-import {getList, addItem, deleteItem, toggleImportant, toggleDone, setSearch, setFilter} from "../../actions";
+import {getList, addItem, deleteItem, toggleImportant, toggleDone, setSearch, setFilter, onPageChanged} from "../../actions";
 
-const App = (props) => { console.log("items", props);
+const App = (props) => {
+  console.log(`APP F:${props.filter} S:${props.search} All:${props.allCount} Done:${props.doneCount} Imp:${props.importantCount} page:${props.pageNumber} pages:${props.pagesTotal}`);
   React.useEffect(() => {
     console.log('useEffectInit');
     props.getList();
@@ -31,6 +33,15 @@ const App = (props) => { console.log("items", props);
   }
 
   const spinner = props.loading ? <Spinner /> : "";
+  const pagination = props.allCount > 0 ?
+    <Pagination
+      pageNumber={props.pageNumber}
+      totalRecords={props.allCount}
+      pageLimit={props.pageLimit}
+      pageNeighbours={1}
+      onPageChanged={props.onPageChanged}
+    /> : "";
+
   console.log("render");
   return (
     <div className="todo-app">
@@ -38,10 +49,7 @@ const App = (props) => { console.log("items", props);
       <div className="search-panel d-flex">
         <ItemAddForm value={props.search} onItemAdded={props.addItem} onSearchChange={props.setSearch} />
 
-        <ItemStatusFilter
-          filter={props.filter}
-          onFilterChange={props.setFilter}
-        />
+        <ItemStatusFilter filter={props.filter} onFilterChange={props.setFilter}  />
       </div>
 
       <TodoList
@@ -51,6 +59,7 @@ const App = (props) => { console.log("items", props);
         onDelete={props.deleteItem}
       />
 
+      {pagination}
       <AppHeader all={props.allCount} done={props.doneCount} important={props.importantCount} />
     </div>
   );
@@ -66,6 +75,9 @@ App.propTypes = {
   allCount: PropTypes.number.isRequired,
   error: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
+  pageLimit: PropTypes.number,
+  pageNumber: PropTypes.number,
+  pagesTotal: PropTypes.number,
 
   getList: PropTypes.func.isRequired,
   addItem: PropTypes.func.isRequired,
@@ -74,6 +86,7 @@ App.propTypes = {
   toggleDone: PropTypes.func.isRequired,
   setSearch: PropTypes.func.isRequired,
   setFilter: PropTypes.func.isRequired,
+  onPageChanged: PropTypes.func
 };
 App.defaultProps = {
   filter: "all",
@@ -81,7 +94,6 @@ App.defaultProps = {
 };
 
 function mapStateToProps(state) {
-  //console.log('qq', state);
   return {
     items: state.items,
     filter: state.filter,
@@ -91,8 +103,10 @@ function mapStateToProps(state) {
     allCount: state.allCount,
     error: state.error,
     loading: state.loading,
+    pageNumber: state.pageNumber,
+    pagesTotal: state.pagesTotal,
+    pageLimit: state.pageLimit
   };
-
 }
 
 // import { bindActionCreators } from 'redux'
@@ -108,7 +122,8 @@ const mapDispatchToProps = (dispatch) => {
     toggleImportant: (id) => dispatch(toggleImportant(id)),
     toggleDone: (id) => dispatch(toggleDone(id)),
     setSearch: (search) => dispatch(setSearch(search)),
-    setFilter: (filter) => dispatch(setFilter(filter))
+    setFilter: (filter) => dispatch(setFilter(filter)),
+    onPageChanged: (paginationData) => dispatch(onPageChanged(paginationData))
   }
 };
 

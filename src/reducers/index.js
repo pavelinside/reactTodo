@@ -7,23 +7,23 @@ const todoSlice = createSlice({
   initialState: initialState,
   reducers: {
     setError: (state, action) => {
-      //console.log('setError', action.payload);
+      console.log('setError', action.payload);
       state.error = action.payload;
     },
     setLoading: (state, action) => {
-      //console.log('setLoading', action.payload);
+      console.log('setLoading', action.payload);
       state.loading = action.payload;
     },
     setItems: (state, action) => {
-      //console.log('setItems', action.payload);
+      console.log('setItems', action.payload);
       state.items = action.payload;
     },
     setFilter: (state, action) => {
-      //console.log('setFilter', action.payload);
+      console.log('setFilter', action.payload);
       state.filter = action.payload;
     },
     setSearch: (state, action) => {
-      //console.log('setSearch', action.payload);
+      console.log('setSearch', action.payload);
       state.search = action.payload;
     },
     setDoneCount: (state, action) => {
@@ -35,8 +35,16 @@ const todoSlice = createSlice({
       state.importantCount = action.payload;
     },
     setAllCount: (state, action) => {
-      // console.log('setAllCount', action.payload);
+      console.log('setAllCount', action.payload);
       state.allCount = action.payload;
+    },
+    setPageNumber: (state, action) => {
+      console.log('setPageNumber', action.payload);
+      state.pageNumber = action.payload;
+    },
+    setPagesTotal: (state, action) => {
+      console.log('setPagesTotal', action.payload);
+      state.pagesTotal = action.payload;
     }
   }
 });

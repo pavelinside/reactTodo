@@ -1,5 +1,5 @@
-import Service from "../services/dummy-todo-service";
-//import Service from "../services/node-todo-service";
+//import Service from "../services/dummy-todo-service";
+import Service from "../services/node-todo-service";
 import {actions} from "../reducers";
 
 const service = new Service();

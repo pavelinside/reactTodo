@@ -6,38 +6,53 @@ export default class NodeTodoService {
     items: [],
     filter: initialState.filter,
     search: initialState.search,
-    doneCount: initialState.doneCount,
-    importantCount: initialState.importantCount,
-    allCount: initialState.allCount,
+    pageNumber: initialState.pageNumber,
+    pageLimit: initialState.pageLimit,
     error: ""
   };
 
-  formResult() {
+  formResult(data) {
+    let doneCount = initialState.doneCount;
+    let importantCount = initialState.importantCount;
+    let allCount = initialState.allCount;
+    if(data.allCount !== undefined){
+      allCount = data.allCount;
+    }
+    if(data.importantCount !== undefined){
+      importantCount = data.importantCount;
+    }
+    if(data.doneCount !== undefined){
+      doneCount = data.doneCount;
+    }
+    if(data.doneCount !== undefined){
+      doneCount = data.doneCount;
+    }
+
+    this._transformItems(data);
+
+    const pagesTotal = Math.ceil(allCount / this.state.pageLimit);
+    if(this.state.pageNumber > pagesTotal){
+      this.state.pageNumber = pagesTotal;
+    }
+
     return {
       items: this.state.items,
-      doneCount: this.state.doneCount,
-      importantCount: this.state.importantCount,
-      allCount: this.state.allCount
+      doneCount,
+      importantCount,
+      allCount,
+      pageNumber: this.state.pageNumber,
+      pagesTotal
     };
   }
 
   _transformItems = (data) => {
+    this.state.items = [];
     if(!data){
       return;
-    }
-    if(data.allCount !== undefined){
-      this.state.allCount = data.allCount;
-    }
-    if(data.importantCount !== undefined){
-      this.state.importantCount = data.importantCount;
-    }
-    if(data.doneCount !== undefined){
-      this.state.doneCount = data.doneCount;
     }
     if(data.items === undefined || !data.items){
       return;
     }
-    this.state.items = [];
     data.items.forEach((currentValue) => {
       const newItem = {
         id: currentValue._id,
@@ -49,30 +64,36 @@ export default class NodeTodoService {
     });
   };
 
+  getDefaultParams = () => {
+    return {
+      filter: this.state.filter,
+      search: this.state.search,
+      pageNumber: this.state.pageNumber,
+      pageLimit: this.state.pageLimit
+    };
+  }
+
   async getList ({action = "load"} = {}) {
     var url = new URL(apiBase);
-    const body = {
-      filter: this.state.filter,
-      search: this.state.search
-    };
+    const body = this.getDefaultParams();
     Object.keys(body).forEach(key => url.searchParams.append(key, body[key]));
 
     try {
       let data = await makeRequest(url, "GET");
-      this._transformItems(data);
+      return Promise.resolve(this.formResult(data));
     } catch(e) {
       return Promise.reject(`Error ${action}`);
     }
-
-    return Promise.resolve(this.formResult());
   }
 
   async setSearch(value) {
+    this.state.pageNumber = 1;
     this.state.search = value;
     return this.getList({action: 'search'});
   }
 
   async setFilter(value){
+    this.state.pageNumber = 1;
     this.state.filter = value;
     return this.getList({action: 'filter'});
   }
@@ -81,10 +102,10 @@ export default class NodeTodoService {
     if(!item){
       return Promise.reject("Incorrect title");
     }
+    const def = this.getDefaultParams();
     const params = {
-      label: item,
-      filter: this.state.filter,
-      search: this.state.search
+      ...def,
+      label: item
     };
     const url = new URL(apiBase+'todo');
     await makeRequest(url, "POST", params);
@@ -92,10 +113,10 @@ export default class NodeTodoService {
   }
 
   async deleteItem(id) {
+    const def = this.getDefaultParams();
     const params = {
-      id: id,
-      filter: this.state.filter,
-      search: this.state.search
+      ...def,
+      id: id
     };
     const url = new URL(apiBase+'todo');
     await makeRequest(url, "DELETE", params);
@@ -103,10 +124,10 @@ export default class NodeTodoService {
   }
 
   async toggleDone(id) {
+    const def = this.getDefaultParams();
     const params = {
+      ...def,
       id: id,
-      filter: this.state.filter,
-      search: this.state.search,
       toggleDone: 1
     };
     const url = new URL(apiBase+'todo');
@@ -115,14 +136,22 @@ export default class NodeTodoService {
   }
 
   async toggleImportant(id) {
+    const def = this.getDefaultParams();
     const params = {
+      ...def,
       id: id,
-      filter: this.state.filter,
-      search: this.state.search,
       toggleImportant: 1
     };
     const url = new URL(apiBase+'todo');
     await makeRequest(url, "PUT", params);
     return this.getList({action: 'change important state'});
+  }
+
+  async setPageNumber(pageNumber = 1) {
+    if(pageNumber <= 0){
+      return Promise.reject("Incorrect pageNumber");
+    }
+    this.state.pageNumber = pageNumber;
+    return this.getList({action: 'pageNumber'});
   }
 }

@@ -3,14 +3,20 @@ const {filterList} = require("../define");
 const {Types} = require("mongoose");
 
 class todoService {
-  async getList({filter = filterList.all, search = ''}) {
+  async getList({filter = filterList.all, search = '', pageNumber = 1, pageLimit = 16}) {
     const findOptions = Object.assign({}, this.getFilter(filter));
     if(search){
       findOptions.label = {'$regex' : search, '$options' : 'i'};
     }
-    const items = await Todo.find(findOptions);
 
-    const counts = await this.getCounts();
+    const counts = await this.getCounts(findOptions);
+    const pagesTotal = Math.ceil(counts.allCount / pageLimit);
+    if(pageNumber > pagesTotal && pagesTotal > 0){
+      pageNumber = pagesTotal;
+    }
+
+    const skip = (pageNumber - 1) * pageLimit;
+    const items = await Todo.find(findOptions).skip(skip).limit(pageLimit);
 
     return {
       ...counts,
@@ -30,10 +36,10 @@ class todoService {
     return {};
   }
 
-  async getCounts(){
-    const doneCount = await Todo.count({done: true});
-    const importantCount = await Todo.count({important: true});
-    const allCount = await Todo.count();
+  async getCounts(findOptions = {}){
+    const doneCount = await Todo.count(Object.assign({}, findOptions, {done: true}));
+    const importantCount = await Todo.count(Object.assign({}, findOptions, {important: true}));
+    const allCount = await Todo.count(findOptions);
     return {
       doneCount,
       importantCount,
@@ -52,7 +58,7 @@ class todoService {
 
   async deleteItem(id) {
     if(Types.ObjectId.isValid(id)) {
-      await Todo.remove({ _id: id });
+      await Todo.deleteOne({ _id: id });
     }
   }
 
@@ -60,7 +66,7 @@ class todoService {
     if(Types.ObjectId.isValid(id)) {
       const row = await Todo.findOne({_id:id});
       if(row){
-        await Todo.update({ _id: id },{ important: !row.important });
+        await Todo.updateOne({ _id: id },{ important: !row.important });
       }
     }
   }
@@ -69,7 +75,7 @@ class todoService {
     if(Types.ObjectId.isValid(id)) {
       const row = await Todo.findOne({_id:id});
       if(row){
-        await Todo.update({ _id: id },{ done: !row.done });
+        await Todo.updateOne({ _id: id },{ done: !row.done });
       }
     }
   }
